@@ -1,12 +1,362 @@
-echo "<!DOCTYPE html>
-<html lang='it'>
+<!DOCTYPE html>
+<html lang="it">
 <head>
-    <meta charset='UTF-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <title>Secondo Sito</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regalo di Natale - Antonella Mafucci PH</title>
+    <style>
+        :root {
+            --primary-color: #1a1a1a;
+            --accent-color: #c41e3a;
+            --text-color: #ffffff;
+            --container-bg: rgba(255, 255, 255, 0.1);
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .brand-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand-title {
+            font-size: 2.5rem;
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .brand-subtitle {
+            font-size: 1.2rem;
+            margin: 0.5rem 0;
+            opacity: 0.9;
+        }
+
+        .container {
+            background-color: var(--container-bg);
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            color: var(--accent-color);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .pin-input {
+            font-size: 1.2rem;
+            letter-spacing: 0.5rem;
+            text-align: center;
+            padding: 1rem;
+            margin: 1rem 0;
+            width: 200px;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        input {
+            background-color: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--accent-color);
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            background-color: #9a1629;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+
+        #countdown {
+            font-size: 1.1rem;
+            margin: 1rem 0;
+            color: var(--accent-color);
+        }
+
+        #gameSection, #result {
+            display: none;
+        }
+
+        .snowflake {
+            color: #fff;
+            font-size: 1em;
+            font-family: Arial;
+            text-shadow: 0 0 1px #000;
+            position: fixed;
+            top: -10%;
+            z-index: 0;
+            animation: fall linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+
+        .music-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .music-controls:hover {
+            opacity: 1;
+        }
+
+        .result-message {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
-    <h1>Benvenuto nel mio secondo sito</h1>
-    <p>Questo è il secondo sito ospitato su GitHub Pages.</p>
+    <div class="brand-header">
+        <h1 class="brand-title">Antonella Mafucci PH</h1>
+        <div class="brand-subtitle">Studio fotografico</div>
+    </div>
+
+    <div class="container">
+        <h1>Regalo di Natale</h1>
+        <div id="countdown"></div>
+        
+        <div id="pinSection">
+            <input type="text" class="pin-input" id="pin" placeholder="Inserisci PIN" maxlength="8" required>
+            <button onclick="verifyPin()">Accedi</button>
+        </div>
+
+        <form id="userForm" style="display: none;">
+            <input type="text" id="name" name="nome" placeholder="Nome" required>
+            <input type="text" id="surname" name="cognome" placeholder="Cognome" required>
+            <input type="email" id="email" name="email" placeholder="Email" required>
+            <input type="tel" id="phone" name="telefono" placeholder="Telefono" required>
+            <input type="hidden" id="premio" name="premio" value="">
+            <button type="button" onclick="submitUserData()">Continua</button>
+        </form>
+
+        <div id="gameSection">
+            <button onclick="play()">Scopri il tuo regalo</button>
+        </div>
+
+        <div id="result"></div>
+    </div>
+
+    <div class="music-controls">
+        <button id="playMusicBtn" onclick="toggleMusic()">🎵</button>
+    </div>
+
+    <audio id="christmasMusic" loop>
+        <source src="https://raw.githubusercontent.com/ziodada/ziodada.github.io/main/Sottofondo%20natale.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const validPins = new Set(['12345678']); // Example PIN
+        const prizes = [
+            { name: "Mini servizio Best Friends gratuito", probability: 0.05, limit: 1 },
+            { name: "Stampa Fine Art 30x45", probability: 0.15 },
+            { name: "Pannello 30x30", probability: 0.30 },
+            { name: "Set di 10 stampe 13x19", probability: 0.25 },
+            { name: "Sconto del 30% su servizio Family", probability: 0.25 }
+        ];
+
+        let userData = {};
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() + 7);
+
+        function verifyPin() {
+            const pin = document.getElementById('pin').value;
+            if (validPins.has(pin)) {
+                document.getElementById('pinSection').style.display = 'none';
+                document.getElementById('userForm').style.display = 'block';
+            } else {
+                alert('PIN non valido. Riprova.');
+            }
+        }
+
+        function toggleMusic() {
+            const music = document.getElementById('christmasMusic');
+            if (music.paused) {
+                music.play();
+                document.getElementById('playMusicBtn').textContent = '🔇';
+            } else {
+                music.pause();
+                document.getElementById('playMusicBtn').textContent = '🎵';
+            }
+        }
+
+        function updateCountdown() {
+            const now = new Date();
+            const timeLeft = endDate - now;
+
+            if (timeLeft <= 0) {
+                document.getElementById('countdown').innerHTML = "Promozione terminata";
+                document.getElementById('userForm').style.display = 'none';
+                return;
+            }
+
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            document.getElementById('countdown').innerHTML = 
+                `Tempo rimanente: ${days}g ${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        function submitUserData() {
+            userData.name = document.getElementById('name').value;
+            userData.surname = document.getElementById('surname').value;
+            userData.email = document.getElementById('email').value;
+            userData.phone = document.getElementById('phone').value;
+
+            if (!userData.name || !userData.surname || !userData.email || !userData.phone) {
+                alert('Per favore, compila tutti i campi.');
+                return;
+            }
+
+            document.getElementById('userForm').style.display = 'none';
+            document.getElementById('gameSection').style.display = 'block';
+        }
+
+        function selectPrize() {
+            const rand = Math.random();
+            let cumulativeProbability = 0;
+            
+            for (let prize of prizes) {
+                cumulativeProbability += prize.probability;
+                if (rand <= cumulativeProbability) {
+                    return prize.name;
+                }
+            }
+            return prizes[prizes.length - 1].name;
+        }
+
+        function play() {
+            const prize = selectPrize();
+            document.getElementById('premio').value = prize;
+            document.getElementById('gameSection').style.display = 'none';
+            document.getElementById('result').style.display = 'block';
+            
+            document.getElementById('result').innerHTML = `
+                <div class="result-message">
+                    <h2>Congratulazioni, ${userData.name}!</h2>
+                    <p>Il tuo regalo di Natale è:</p>
+                    <h3>${prize}</h3>
+                    <p>Ti contatteremo presto per i dettagli.</p>
+                    <form action="https://formspree.io/f/xyzygrwg" method="POST" onsubmit="return handleSubmit(event)">
+                        <input type="hidden" name="nome" value="${userData.name}">
+                        <input type="hidden" name="cognome" value="${userData.surname}">
+                        <input type="hidden" name="email" value="${userData.email}">
+                        <input type="hidden" name="telefono" value="${userData.phone}">
+                        <input type="hidden" name="premio" value="${prize}">
+                        <button type="submit">Conferma</button>
+                    </form>
+                </div>
+            `;
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const data = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                body: data,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById('result').innerHTML = `
+                        <div class="result-message">
+                            <h2>Grazie!</h2>
+                            <p>La tua richiesta è stata registrata con successo.</p>
+                            <p>Ti contatteremo presto per i dettagli del tuo regalo.</p>
+                        </div>
+                    `;
+                } else {
+                    throw new Error('Errore nell\'invio del form');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Si è verificato un errore. Per favore, riprova.');
+            });
+
+            return false;
+        }
+
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.classList.add('snowflake');
+            snowflake.innerHTML = '❄';
+            snowflake.style.left = Math.random() * 100 + '%';
+            snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
+            snowflake.style.opacity = Math.random();
+            snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
+            document.body.appendChild(snowflake);
+            
+            setTimeout(() => {
+                snowflake.remove();
+            }, 5000);
+        }
+
+        // Inizializzazione
+        document.getElementById('playMusicBtn').style.display = 'block';
+        setInterval(createSnowflake, 50);
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
 </body>
-</html>" > index.html
+</html>
